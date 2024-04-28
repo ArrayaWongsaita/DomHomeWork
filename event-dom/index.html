@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+
+    .todo-list {
+      width: 500px;
+      margin: 0 auto;
+    }
+
+    .todo-list input {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    .todo-list ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .todo-list li {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .todo-list li.completed {
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+<body>
+  <h1>Todo List</h1>
+
+  <div class="todo-list">
+    <input type="text" id="todo-input" placeholder="เพิ่มรายการ">
+    <button id="add-button">Add</button>
+
+    <ul id="todo-list">
+      </ul>
+  </div>
+
+  <script>
+    const todoList = document.getElementById('todo-list');
+const todoInput = document.getElementById('todo-input');
+const addButton = document.getElementById('add-button');
+
+let todoItems = [];
+
+addButton.addEventListener('click', () => {
+  const todoText = todoInput.value.trim();
+
+  if (todoText) {
+    const todoItem = {
+      text: todoText,
+      completed: false
+    };
+
+    todoItems.push(todoItem);
+
+    renderTodoList();
+
+    todoInput.value = '';
+  }
+});
+
+todoList.addEventListener('click', (event) => {
+  const target = event.target;
+  const todoId = target.dataset.id;
+
+  if (target.tagName === 'BUTTON') {
+    if (target.id === 'delete-button') {
+      deleteTodoItem(todoId);
+    } else if (target.id === 'edit-button') {
+      editTodoItem(todoId);
+    }
+  } else if (target.tagName === 'LI') {
+    toggleTodoItem(todoId);
+  }
+});
+
+function renderTodoList() {
+  todoList.innerHTML = '';
+
+  todoItems.forEach((todoItem, index) => {
+    const li = document.createElement('li');
+    li.dataset.id = index;
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = todoItem.completed;
+    checkbox.addEventListener('change', () => toggleTodoItem(index));
+
+    const span = document.createElement('span');
+    span.textContent = todoItem.text;
+
+    const editButton = document.createElement('button');
+    editButton.id = 'edit-button';
+    editButton.textContent = 'Edit';
+    editButton.addEventListener('click', () => editTodoItem(index));
+
+    const deleteButton = document.createElement('button');
+    deleteButton.id = 'delete-button';
+    deleteButton.textContent = 'Del';
+    deleteButton.addEventListener('click', () => deleteTodoItem(index));
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
+    li.appendChild(editButton);
+    li.appendChild(deleteButton);
+
+    if (todoItem.completed) {
+      li.classList.add('completed');
+    }
+
+    todoList.appendChild(li);
+  });
+}
+
+function toggleTodoItem(index) {
+  todoItems[index].completed = !todoItems[index].completed;
+  renderTodoList();
+}
+
+function editTodoItem(index) {
+  const todoItem = todoItems[index];
+  const text = prompt('แก้ไขข้อความ:', todoItem.text);
+
+  if (text) {
+    todoItem.text = text;
+    renderTodoList();
+  }
+}
+
+function deleteTodoItem(index) {
+  todoItems.splice(index, 1);
+  renderTodoList();
+}
+
+renderTodoList();
+
+  </script>
+</body>
+</html>
